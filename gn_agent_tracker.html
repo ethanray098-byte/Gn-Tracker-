@@ -1,0 +1,464 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.app{font-family:var(--font-sans);font-size:13px;color:var(--color-text-primary)}
+.nav{display:flex;gap:4px;flex-wrap:wrap;padding-bottom:12px;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:16px}
+.nb{padding:5px 11px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-secondary);cursor:pointer;font-size:12px;font-weight:500;white-space:nowrap}
+.nb:hover{background:var(--color-background-secondary)}
+.nb.on{border-color:#3B6D11;color:#3B6D11;background:#EAF3DE}
+.tab{display:none}.tab.on{display:block}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.met{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px 14px}
+.met-l{font-size:11px;color:var(--color-text-secondary);margin-bottom:5px;letter-spacing:0.3px}
+.met-v{font-size:21px;font-weight:500}
+.met-s{font-size:11px;color:var(--color-text-secondary);margin-top:2px}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px;margin-bottom:14px}
+.ct{font-size:13px;font-weight:500;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.sec{font-size:15px;font-weight:500;margin-bottom:14px}
+.tbl{width:100%;border-collapse:collapse;table-layout:fixed;font-size:12px}
+.tbl th{text-align:left;padding:6px 8px;color:var(--color-text-secondary);font-weight:500;border-bottom:0.5px solid var(--color-border-tertiary);font-size:11px;white-space:nowrap}
+.tbl td{padding:6px 8px;border-bottom:0.5px solid var(--color-border-tertiary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--color-background-secondary)}
+.card-tbl{padding:0;overflow:hidden}
+.bdg{display:inline-block;padding:2px 7px;border-radius:100px;font-size:11px;font-weight:500}
+.bg{background:#EAF3DE;color:#27500A}.ba{background:#FAEEDA;color:#633806}.br{background:#FCEBEB;color:#791F1F}.bb{background:#E6F1FB;color:#0C447C}.bp{background:#EEEDFE;color:#3C3489}
+.row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.btn{padding:6px 13px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-primary);cursor:pointer;font-size:12px;font-weight:500}
+.btn:hover{background:var(--color-background-secondary)}
+.btnp{background:#3B6D11;color:#EAF3DE;border-color:#3B6D11}
+.btnp:hover{background:#27500A}
+.btnd{border-color:#A32D2D;color:#A32D2D}
+.btnd:hover{background:#FCEBEB}
+.btns{padding:3px 8px;font-size:11px}
+.field{margin-bottom:10px}
+.field label{font-size:12px;color:var(--color-text-secondary);display:block;margin-bottom:3px}
+.field input,.field select{width:100%;padding:7px 9px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);font-size:13px}
+.mf{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.alert{padding:9px 13px;border-radius:var(--border-radius-md);font-size:12px;margin-bottom:10px;border-left:3px solid}
+.alert.g{background:#EAF3DE;border-color:#3B6D11;color:#27500A}
+.alert.a{background:#FAEEDA;border-color:#854F0B;color:#633806}
+.alert.r{background:#FCEBEB;border-color:#A32D2D;color:#791F1F}
+.pbar{height:5px;background:var(--color-background-secondary);border-radius:3px;overflow:hidden;margin-top:5px}
+.pfill{height:100%;border-radius:3px}
+.sep{height:0.5px;background:var(--color-border-tertiary);margin:10px 0}
+.ov-dialog{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:20px;margin-bottom:14px}
+.ov-modal{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:20px;margin-bottom:14px}
+</style>
+
+<div class="app">
+<h2 class="sr-only">Ganjah Nation agent tracker — manage agents, sales, inventory, revenue, and ROI in one place.</h2>
+
+<div class="nav" id="nav"></div>
+
+<div id="tabs">
+
+<div class="tab on" id="t-overview"></div>
+<div class="tab" id="t-agents"></div>
+<div class="tab" id="t-sales"></div>
+<div class="tab" id="t-revenue"></div>
+<div class="tab" id="t-inventory"></div>
+<div class="tab" id="t-roi"></div>
+<div class="tab" id="t-content"></div>
+<div class="tab" id="t-issues"></div>
+
+</div>
+</div>
+
+<script>
+const TABS=[
+  {id:'overview',icon:'ti-layout-dashboard',label:'Overview'},
+  {id:'agents',icon:'ti-users',label:'Agents'},
+  {id:'sales',icon:'ti-chart-bar',label:'Sales'},
+  {id:'revenue',icon:'ti-coin',label:'Revenue'},
+  {id:'inventory',icon:'ti-packages',label:'Inventory'},
+  {id:'roi',icon:'ti-trending-up',label:'ROI'},
+  {id:'content',icon:'ti-photo',label:'Content'},
+  {id:'issues',icon:'ti-alert-triangle',label:'Issues'},
+];
+
+const K='gn_v3';
+let D=JSON.parse(localStorage.getItem(K)||'null')||{
+  agents:[
+    {id:'AG001',name:'Ko Aung Kyaw',phone:'09-111111',city:'Yangon',platform:'Facebook',status:'Active',joined:'2025-06-01',source:'Highkey'},
+    {id:'AG002',name:'Ma Aye Aye',phone:'09-222222',city:'Mandalay',platform:'Instagram',status:'Active',joined:'2025-06-05',source:'FB Ad'},
+    {id:'AG003',name:'Ko Zaw Win',phone:'09-333333',city:'Yangon',platform:'Telegram',status:'Slow',joined:'2025-06-10',source:'Friend'},
+  ],
+  sales:[
+    {agentId:'AG001',month:'2025-06',orders:14,revenue:520000,lastMonth:380000},
+    {agentId:'AG002',month:'2025-06',orders:9,revenue:310000,lastMonth:290000},
+    {agentId:'AG003',month:'2025-06',orders:4,revenue:95000,lastMonth:120000},
+  ],
+  costs:{stock:900000,ads:50000,ops:30000},
+  stock:[
+    {name:'G-Tone',unit:'gram',open:500,sold:320,costPer:8000,reorder:100},
+    {name:'Superbud OG',unit:'gram',open:300,sold:180,costPer:10000,reorder:50},
+    {name:'House Mix',unit:'gram',open:1000,sold:600,costPer:5500,reorder:150},
+  ],
+  content:[
+    {agentId:'AG001',date:'2025-06-15',type:'Weekend vibe',platform:'Facebook',reach:1240,engage:87,violation:'none'},
+    {agentId:'AG002',date:'2025-06-14',type:'Lifestyle mood',platform:'Instagram',reach:890,engage:124,violation:'none'},
+  ],
+  issues:[
+    {agentId:'AG003',date:'2025-06-10',desc:'Late delivery complaint',severity:'Medium',status:'Resolved',resolution:'Refund offered'},
+  ],
+};
+
+function sv(){localStorage.setItem(K,JSON.stringify(D))}
+const f=n=>Math.round(n).toLocaleString();
+const pct=(a,b)=>b===0?'0.0':((a/b-1)*100).toFixed(1);
+const aname=id=>{const a=D.agents.find(x=>x.id===id);return a?a.name:'?'};
+const totalRev=()=>D.sales.reduce((s,x)=>s+x.revenue,0);
+const totalOrd=()=>D.sales.reduce((s,x)=>s+x.orders,0);
+const nextId=()=>{const ns=D.agents.map(a=>parseInt(a.id.replace('AG',''))||0);return 'AG'+String(Math.max(0,...ns)+1).padStart(3,'0')};
+
+function buildNav(){
+  document.getElementById('nav').innerHTML=TABS.map(t=>`<button class="nb${t.id==='overview'?' on':''}" onclick="go('${t.id}')"><i class="ti ${t.icon}" aria-hidden="true"></i> ${t.label}</button>`).join('');
+}
+
+function go(id){
+  document.querySelectorAll('.tab').forEach(e=>e.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(e=>e.classList.remove('on'));
+  document.getElementById('t-'+id).classList.add('on');
+  document.querySelectorAll('.nb').forEach(e=>{if(e.getAttribute('onclick').includes("'"+id+"'"))e.classList.add('on')});
+  renders[id]();
+}
+
+const renders={
+  overview:renderOverview,agents:renderAgents,sales:renderSales,
+  revenue:renderRevenue,inventory:renderInventory,roi:renderROI,
+  content:renderContent,issues:renderIssues
+};
+
+function renderOverview(){
+  const ts=totalRev(),to=totalOrd(),comm=ts*0.2;
+  const netProfit=comm-D.costs.ads-D.costs.ops;
+  const active=D.agents.filter(a=>a.status==='Active').length;
+  const alerts=[];
+  D.stock.forEach(s=>{const r=s.open-s.sold;if(r<=s.reorder)alerts.push({cls:'r',msg:`${s.name}: only ${r} ${s.unit} left — reorder now`})});
+  D.agents.filter(a=>a.status==='Slow').forEach(a=>alerts.push({cls:'a',msg:`${a.name} is slow — check in this week`}));
+  D.content.filter(c=>c.violation==='major').forEach(c=>alerts.push({cls:'r',msg:`${aname(c.agentId)}: major FB violation on ${c.date}`}));
+  const top=[...D.sales].sort((a,b)=>b.revenue-a.revenue).slice(0,3);
+  const maxRev=Math.max(...D.sales.map(s=>s.revenue),1);
+
+  document.getElementById('t-overview').innerHTML=`
+<div class="grid4">
+  <div class="met"><div class="met-l">Active agents</div><div class="met-v" style="color:#3B6D11">${active}</div><div class="met-s">${D.agents.length} total</div></div>
+  <div class="met"><div class="met-l">Total revenue</div><div class="met-v">${f(ts)}</div><div class="met-s">MMK this month</div></div>
+  <div class="met"><div class="met-l">Your commission (20%)</div><div class="met-v" style="color:#3B6D11">${f(comm)}</div><div class="met-s">MMK</div></div>
+  <div class="met"><div class="met-l">Net profit</div><div class="met-v" style="color:${netProfit>=0?'#3B6D11':'#A32D2D'}">${f(netProfit)}</div><div class="met-s">MMK after costs</div></div>
+</div>
+<div class="grid2">
+  <div class="card">
+    <div class="ct"><i class="ti ti-trophy" aria-hidden="true"></i> Top agents</div>
+    ${top.map((s,i)=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary)">
+      <div><div style="font-weight:500;font-size:13px">${['#1','#2','#3'][i]} ${aname(s.agentId)}</div><div style="font-size:11px;color:var(--color-text-secondary)">${s.orders} orders</div></div>
+      <div style="text-align:right"><div style="font-weight:500;color:#3B6D11">${f(s.revenue)} MMK</div><div style="font-size:11px;color:var(--color-text-secondary)">${pct(s.revenue,s.lastMonth)>0?'+':''}${pct(s.revenue,s.lastMonth)}%</div></div>
+    </div>`).join('')}
+  </div>
+  <div class="card">
+    <div class="ct"><i class="ti ti-alert-triangle" aria-hidden="true"></i> Alerts</div>
+    ${alerts.length===0?'<div class="alert g">All clear — no alerts</div>':alerts.map(a=>`<div class="alert ${a.cls}">${a.msg}</div>`).join('')}
+  </div>
+</div>
+<div class="card">
+  <div class="ct"><i class="ti ti-chart-bar" aria-hidden="true"></i> Agent revenue (MMK)</div>
+  <div style="display:flex;align-items:flex-end;gap:8px;height:100px">
+    ${D.sales.map(s=>{const h=Math.round((s.revenue/maxRev)*88);return`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px"><div style="font-size:10px;color:var(--color-text-secondary)">${f(s.revenue/1000)}k</div><div style="width:100%;height:${h}px;background:#639922;border-radius:3px 3px 0 0;min-height:3px"></div><div style="font-size:10px;color:var(--color-text-secondary);overflow:hidden;max-width:55px;text-overflow:ellipsis;white-space:nowrap">${aname(s.agentId).split(' ')[0]}</div></div>`}).join('')}
+  </div>
+</div>`;
+}
+
+let agEd=null;
+function renderAgents(){
+  document.getElementById('t-agents').innerHTML=`
+<div class="row"><span class="sec">Agents</span><button class="btn btnp" onclick="openAgEd()"><i class="ti ti-plus" aria-hidden="true"></i> Add agent</button></div>
+<div id="ag-form-area"></div>
+<div class="card card-tbl">
+  <table class="tbl">
+    <thead><tr><th style="width:60px">ID</th><th style="width:130px">Name</th><th style="width:90px">Phone</th><th style="width:80px">City</th><th style="width:90px">Platform</th><th style="width:75px">Status</th><th style="width:75px">Joined</th><th style="width:60px"></th></tr></thead>
+    <tbody>${D.agents.map((a,i)=>`<tr>
+      <td style="font-size:11px;font-weight:500;color:#3B6D11">${a.id}</td>
+      <td style="font-weight:500">${a.name}</td><td>${a.phone}</td><td>${a.city}</td><td>${a.platform}</td>
+      <td><span class="bdg ${a.status==='Active'?'bg':a.status==='Slow'?'ba':'br'}">${a.status}</span></td>
+      <td style="color:var(--color-text-secondary)">${a.joined}</td>
+      <td style="display:flex;gap:3px"><button class="btn btns" onclick="openAgEd(${i})" aria-label="Edit"><i class="ti ti-edit" aria-hidden="true"></i></button><button class="btn btns btnd" onclick="delAg(${i})" aria-label="Delete"><i class="ti ti-trash" aria-hidden="true"></i></button></td>
+    </tr>`).join('')}</tbody>
+  </table>
+</div>`;
+}
+
+function openAgEd(idx){
+  agEd=idx===undefined?null:idx;
+  const a=agEd!==null?D.agents[agEd]:{};
+  document.getElementById('ag-form-area').innerHTML=`<div class="ov-modal">
+    <div style="font-size:14px;font-weight:500;margin-bottom:14px">${agEd===null?'Add new agent':'Edit agent'}</div>
+    <div class="mf"><div class="field"><label>Full name</label><input id="af-name" value="${a.name||''}"></div><div class="field"><label>Phone</label><input id="af-phone" value="${a.phone||''}"></div></div>
+    <div class="mf"><div class="field"><label>City</label><input id="af-city" value="${a.city||''}"></div><div class="field"><label>Platform</label><select id="af-plat"><option${(a.platform||'')==='Facebook'?' selected':''}>Facebook</option><option${(a.platform||'')==='Instagram'?' selected':''}>Instagram</option><option${(a.platform||'')==='Telegram'?' selected':''}>Telegram</option><option${(a.platform||'')==='Multiple'?' selected':''}>Multiple</option></select></div></div>
+    <div class="mf"><div class="field"><label>Status</label><select id="af-status"><option${(a.status||'')==='Active'?' selected':''}>Active</option><option${(a.status||'')==='Slow'?' selected':''}>Slow</option><option${(a.status||'')==='Inactive'?' selected':''}>Inactive</option></select></div><div class="field"><label>Source</label><input id="af-src" value="${a.source||''}"></div></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" onclick="document.getElementById('ag-form-area').innerHTML=''">Cancel</button><button class="btn btnp" onclick="saveAg()">Save</button></div>
+  </div>`;
+}
+
+function saveAg(){
+  const name=document.getElementById('af-name').value.trim();if(!name)return;
+  const obj={id:agEd===null?nextId():D.agents[agEd].id,name,phone:document.getElementById('af-phone').value,city:document.getElementById('af-city').value,platform:document.getElementById('af-plat').value,status:document.getElementById('af-status').value,source:document.getElementById('af-src').value,joined:agEd===null?new Date().toISOString().slice(0,10):D.agents[agEd].joined};
+  if(agEd===null)D.agents.push(obj);else D.agents[agEd]=obj;
+  sv();renderAgents();
+}
+function delAg(i){if(confirm('Delete this agent?')){D.agents.splice(i,1);sv();renderAgents();}}
+
+let slEd=null;
+function renderSales(){
+  const ts=totalRev(),to=totalOrd(),comm=ts*0.2;
+  const agOpts=D.agents.map(a=>`<option value="${a.id}">${a.id} — ${a.name}</option>`).join('');
+  document.getElementById('t-sales').innerHTML=`
+<div class="row"><span class="sec">Sales</span><button class="btn btnp" onclick="openSlEd()"><i class="ti ti-plus" aria-hidden="true"></i> Log sale</button></div>
+<div id="sl-form-area"></div>
+<div class="grid4" style="margin-bottom:14px">
+  <div class="met"><div class="met-l">Total revenue</div><div class="met-v">${f(ts)}</div><div class="met-s">MMK</div></div>
+  <div class="met"><div class="met-l">Your commission</div><div class="met-v" style="color:#3B6D11">${f(comm)}</div><div class="met-s">20% · MMK</div></div>
+  <div class="met"><div class="met-l">Total orders</div><div class="met-v">${to}</div></div>
+  <div class="met"><div class="met-l">Avg order value</div><div class="met-v">${to>0?f(ts/to):0}</div><div class="met-s">MMK</div></div>
+</div>
+<div class="card card-tbl">
+  <table class="tbl">
+    <thead><tr><th style="width:55px">ID</th><th style="width:120px">Name</th><th style="width:65px">Orders</th><th style="width:105px">Revenue (MMK)</th><th style="width:105px">Last month</th><th style="width:75px">Growth</th><th style="width:110px">Commission (MMK)</th><th style="width:50px"></th></tr></thead>
+    <tbody>${D.sales.map((s,i)=>{const g=s.lastMonth>0?((s.revenue/s.lastMonth-1)*100):0;return`<tr>
+      <td style="font-size:11px;font-weight:500;color:#3B6D11">${s.agentId}</td>
+      <td style="font-weight:500">${aname(s.agentId)}</td><td>${s.orders}</td>
+      <td style="font-weight:500">${f(s.revenue)}</td>
+      <td style="color:var(--color-text-secondary)">${f(s.lastMonth)}</td>
+      <td><span class="bdg ${g>=0?'bg':'br'}">${g>=0?'+':''}${g.toFixed(1)}%</span></td>
+      <td style="color:#3B6D11;font-weight:500">${f(s.revenue*0.2)}</td>
+      <td><button class="btn btns btnd" onclick="delSl(${i})" aria-label="Delete"><i class="ti ti-trash" aria-hidden="true"></i></button></td>
+    </tr>`}).join('')}</tbody>
+  </table>
+</div>`;
+}
+
+function openSlEd(){
+  const agOpts=D.agents.map(a=>`<option value="${a.id}">${a.id} — ${a.name}</option>`).join('');
+  const now=new Date().toISOString().slice(0,7);
+  document.getElementById('sl-form-area').innerHTML=`<div class="ov-modal">
+    <div style="font-size:14px;font-weight:500;margin-bottom:14px">Log sale</div>
+    <div class="mf"><div class="field"><label>Agent</label><select id="sf-ag">${agOpts}</select></div><div class="field"><label>Month</label><input id="sf-mo" type="month" value="${now}"></div></div>
+    <div class="mf"><div class="field"><label>Orders</label><input id="sf-ord" type="number" value="0"></div><div class="field"><label>Revenue (MMK)</label><input id="sf-rev" type="number" value="0"></div></div>
+    <div class="field"><label>Last month revenue (MMK)</label><input id="sf-last" type="number" value="0"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" onclick="document.getElementById('sl-form-area').innerHTML=''">Cancel</button><button class="btn btnp" onclick="saveSl()">Save</button></div>
+  </div>`;
+}
+function saveSl(){
+  const agentId=document.getElementById('sf-ag').value;
+  const month=document.getElementById('sf-mo').value;
+  const obj={agentId,month,orders:parseInt(document.getElementById('sf-ord').value)||0,revenue:parseInt(document.getElementById('sf-rev').value)||0,lastMonth:parseInt(document.getElementById('sf-last').value)||0};
+  const ex=D.sales.findIndex(s=>s.agentId===agentId&&s.month===month);
+  if(ex>=0)D.sales[ex]=obj;else D.sales.push(obj);
+  sv();renderSales();
+}
+function delSl(i){if(confirm('Delete this sale record?')){D.sales.splice(i,1);sv();renderSales();}}
+
+function renderRevenue(){
+  const ts=totalRev(),comm=ts*0.2,gn=ts*0.8;
+  const tc=D.costs.stock+D.costs.ads+D.costs.ops;
+  const net=comm-D.costs.ads-D.costs.ops;
+  const margin=comm>0?((net/comm)*100):0;
+  document.getElementById('t-revenue').innerHTML=`
+<div class="sec">Revenue & profit</div>
+<div class="grid4">
+  <div class="met"><div class="met-l">Gross revenue</div><div class="met-v">${f(ts)}</div><div class="met-s">MMK total</div></div>
+  <div class="met"><div class="met-l">Your 20%</div><div class="met-v" style="color:#3B6D11">${f(comm)}</div><div class="met-s">MMK</div></div>
+  <div class="met"><div class="met-l">GN share (80%)</div><div class="met-v">${f(gn)}</div><div class="met-s">MMK</div></div>
+  <div class="met"><div class="met-l">Net profit</div><div class="met-v" style="color:${net>=0?'#3B6D11':'#A32D2D'}">${f(net)}</div><div class="met-s">MMK after costs</div></div>
+</div>
+<div class="grid2">
+  <div class="card">
+    <div class="ct"><i class="ti ti-arrow-up-right" aria-hidden="true"></i> Revenue breakdown</div>
+    ${[['Gross revenue (all agents)',f(ts),''],['Your commission (20%)',f(comm),'#3B6D11'],['GN share (80%)',f(gn),'#0C447C'],['Avg order value',totalOrd()>0?f(totalRev()/totalOrd()):'—','']].map(([l,v,c])=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid var(--color-border-tertiary)"><span style="color:var(--color-text-secondary)">${l}</span><span style="font-weight:500;color:${c||'var(--color-text-primary)'}"> ${v} MMK</span></div>`).join('')}
+  </div>
+  <div class="card">
+    <div class="ct"><i class="ti ti-arrow-down-right" aria-hidden="true"></i> Costs — edit to update</div>
+    <div class="field"><label>Stock cost (MMK)</label><input id="c-stock" type="number" value="${D.costs.stock}" oninput="upCost()"></div>
+    <div class="field"><label>Marketing / ads (MMK)</label><input id="c-ads" type="number" value="${D.costs.ads}" oninput="upCost()"></div>
+    <div class="field"><label>Operations (MMK)</label><input id="c-ops" type="number" value="${D.costs.ops}" oninput="upCost()"></div>
+    <div class="sep"></div>
+    <div style="display:flex;justify-content:space-between"><span style="color:var(--color-text-secondary)">Total costs</span><span id="cost-total" style="font-weight:500;color:#A32D2D">${f(tc)} MMK</span></div>
+  </div>
+</div>
+<div class="card">
+  <div class="ct"><i class="ti ti-chart-pie" aria-hidden="true"></i> Profit summary</div>
+  <div class="grid3">
+    <div class="met"><div class="met-l">Gross profit</div><div class="met-v" style="color:#3B6D11">${f(comm)}</div><div class="met-s">MMK</div></div>
+    <div class="met"><div class="met-l">Net profit</div><div class="met-v" style="color:${net>=0?'#3B6D11':'#A32D2D'}">${f(net)}</div><div class="met-s">MMK</div></div>
+    <div class="met"><div class="met-l">Profit margin</div><div class="met-v" style="color:${margin>=50?'#3B6D11':margin>=20?'#854F0B':'#A32D2D'}">${margin.toFixed(1)}%</div><div class="met-s">of commission</div></div>
+  </div>
+  <div style="margin-top:8px">
+    <div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:4px">Profit margin</div>
+    <div class="pbar"><div class="pfill" style="width:${Math.min(100,Math.max(0,margin)).toFixed(0)}%;background:${margin>=50?'#639922':margin>=20?'#BA7517':'#E24B4A'}"></div></div>
+  </div>
+</div>`;
+}
+
+function upCost(){
+  D.costs.stock=parseInt(document.getElementById('c-stock').value)||0;
+  D.costs.ads=parseInt(document.getElementById('c-ads').value)||0;
+  D.costs.ops=parseInt(document.getElementById('c-ops').value)||0;
+  const tc=D.costs.stock+D.costs.ads+D.costs.ops;
+  document.getElementById('cost-total').textContent=f(tc)+' MMK';
+  sv();
+}
+
+let skEd=null;
+function renderInventory(){
+  const alerts=D.stock.filter(s=>(s.open-s.sold)<=s.reorder);
+  const totVal=D.stock.reduce((s,x)=>s+(x.open-x.sold)*x.costPer,0);
+  const totSold=D.stock.reduce((s,x)=>s+x.sold,0);
+  document.getElementById('t-inventory').innerHTML=`
+<div class="row"><span class="sec">Inventory & stock</span><button class="btn btnp" onclick="openSkEd()"><i class="ti ti-plus" aria-hidden="true"></i> Add product</button></div>
+<div id="sk-form-area"></div>
+${alerts.map(s=>`<div class="alert r"><i class="ti ti-alert-triangle" aria-hidden="true"></i> ${s.name}: only ${s.open-s.sold} ${s.unit} remaining — reorder now</div>`).join('')}
+<div class="card card-tbl">
+  <table class="tbl">
+    <thead><tr><th style="width:110px">Product</th><th style="width:50px">Unit</th><th style="width:65px">Opening</th><th style="width:65px">Sold</th><th style="width:75px">Remaining</th><th style="width:90px">Cost/unit</th><th style="width:100px">Stock value</th><th style="width:80px">Status</th><th style="width:60px"></th></tr></thead>
+    <tbody>${D.stock.map((s,i)=>{const rem=s.open-s.sold;const val=rem*s.costPer;const cls=rem<=s.reorder?'br':rem<=s.reorder*2?'ba':'bg';const lbl=rem<=s.reorder?'Reorder':rem<=s.reorder*2?'Low':'OK';return`<tr>
+      <td style="font-weight:500">${s.name}</td><td>${s.unit}</td><td>${s.open}</td><td>${s.sold}</td>
+      <td style="font-weight:500;color:${rem<=s.reorder?'#A32D2D':rem<=s.reorder*2?'#854F0B':'#3B6D11'}">${rem}</td>
+      <td>${f(s.costPer)}</td><td>${f(val)}</td>
+      <td><span class="bdg ${cls}">${lbl}</span></td>
+      <td style="display:flex;gap:3px"><button class="btn btns" onclick="openSkEd(${i})" aria-label="Edit"><i class="ti ti-edit" aria-hidden="true"></i></button><button class="btn btns btnd" onclick="delSk(${i})" aria-label="Delete"><i class="ti ti-trash" aria-hidden="true"></i></button></td>
+    </tr>`}).join('')}</tbody>
+  </table>
+</div>
+<div class="grid3">
+  <div class="met"><div class="met-l">Total stock value</div><div class="met-v">${f(totVal)}</div><div class="met-s">MMK</div></div>
+  <div class="met"><div class="met-l">Total units sold</div><div class="met-v">${totSold}</div><div class="met-s">this month</div></div>
+  <div class="met"><div class="met-l">Reorder alerts</div><div class="met-v" style="color:${alerts.length>0?'#A32D2D':'#3B6D11'}">${alerts.length}</div><div class="met-s">products</div></div>
+</div>`;
+}
+
+function openSkEd(idx){
+  skEd=idx===undefined?null:idx;
+  const s=skEd!==null?D.stock[skEd]:{};
+  document.getElementById('sk-form-area').innerHTML=`<div class="ov-modal">
+    <div style="font-size:14px;font-weight:500;margin-bottom:14px">${skEd===null?'Add product':'Edit product'}</div>
+    <div class="mf"><div class="field"><label>Product / strain name</label><input id="sk-name" value="${s.name||''}"></div><div class="field"><label>Unit</label><select id="sk-unit"><option${(s.unit||'')==='gram'?' selected':''}>gram</option><option${(s.unit||'')==='piece'?' selected':''}>piece</option><option${(s.unit||'')==='pack'?' selected':''}>pack</option></select></div></div>
+    <div class="mf"><div class="field"><label>Opening stock</label><input id="sk-open" type="number" value="${s.open||0}"></div><div class="field"><label>Sold this month</label><input id="sk-sold" type="number" value="${s.sold||0}"></div></div>
+    <div class="mf"><div class="field"><label>Cost per unit (MMK)</label><input id="sk-cost" type="number" value="${s.costPer||0}"></div><div class="field"><label>Reorder threshold</label><input id="sk-reord" type="number" value="${s.reorder||100}"></div></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" onclick="document.getElementById('sk-form-area').innerHTML=''">Cancel</button><button class="btn btnp" onclick="saveSk()">Save</button></div>
+  </div>`;
+}
+function saveSk(){
+  const name=document.getElementById('sk-name').value.trim();if(!name)return;
+  const obj={name,unit:document.getElementById('sk-unit').value,open:parseInt(document.getElementById('sk-open').value)||0,sold:parseInt(document.getElementById('sk-sold').value)||0,costPer:parseInt(document.getElementById('sk-cost').value)||0,reorder:parseInt(document.getElementById('sk-reord').value)||100};
+  if(skEd===null)D.stock.push(obj);else D.stock[skEd]=obj;
+  sv();renderInventory();
+}
+function delSk(i){if(confirm('Delete this product?')){D.stock.splice(i,1);sv();renderInventory();}}
+
+function renderROI(){
+  const cpa=parseInt(document.getElementById('roi-cpa')||{value:20000}?.value)||20000;
+  const guide=[['500%+','Superstar','Give bonus, make team leader','bg'],['200–499%','Excellent','Keep supporting and grow','bg'],['100–199%','Good','More content support needed','bb'],['50–99%','Borderline','Strategy call this week','ba'],['0–49%','Weak','1 month to improve','br'],['Negative','Cut','Exit conversation needed','br']];
+  const rows=D.sales.map(s=>{const comm=s.revenue*0.2;const c=parseInt(document.getElementById('roi-cpa')?.value)||20000;const roi=c>0?((comm-c)/c*100):0;return{...s,comm,roi}}).sort((a,b)=>b.roi-a.roi);
+  document.getElementById('t-roi').innerHTML=`
+<div class="sec">ROI dashboard</div>
+<div class="alert g" style="margin-bottom:14px">ROI = (commission earned - cost per agent) / cost per agent × 100. Higher = better value for your time and investment.</div>
+<div class="field" style="max-width:260px;margin-bottom:16px"><label>Your cost per agent per month (MMK)</label><input id="roi-cpa" type="number" value="20000" oninput="renderROI()"></div>
+<div class="card card-tbl">
+  <table class="tbl">
+    <thead><tr><th style="width:55px">ID</th><th style="width:130px">Name</th><th style="width:110px">Commission (MMK)</th><th style="width:100px">Cost (MMK)</th><th style="width:90px">ROI %</th><th style="width:60px">Rank</th><th style="width:90px">Status</th></tr></thead>
+    <tbody>${rows.map((s,i)=>{const cpa2=parseInt(document.getElementById('roi-cpa')?.value)||20000;const roi=cpa2>0?((s.comm-cpa2)/cpa2*100):0;const cls=roi>=200?'bg':roi>=100?'bb':roi>=50?'ba':'br';const lbl=roi>=500?'Superstar':roi>=200?'Excellent':roi>=100?'Good':roi>=50?'Borderline':'Weak';return`<tr>
+      <td style="font-size:11px;font-weight:500;color:#3B6D11">${s.agentId}</td>
+      <td style="font-weight:500">${aname(s.agentId)}</td>
+      <td style="color:#3B6D11;font-weight:500">${f(s.comm)}</td>
+      <td style="color:#A32D2D">${f(cpa2)}</td>
+      <td style="font-weight:500">${roi.toFixed(1)}%</td>
+      <td style="color:var(--color-text-secondary);font-weight:500">#${i+1}</td>
+      <td><span class="bdg ${cls}">${lbl}</span></td>
+    </tr>`}).join('')}</tbody>
+  </table>
+</div>
+<div class="card">
+  <div class="ct"><i class="ti ti-info-circle" aria-hidden="true"></i> ROI interpretation guide</div>
+  ${guide.map(([range,status,action,cls])=>`<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:0.5px solid var(--color-border-tertiary)"><span style="font-weight:500;min-width:70px;font-size:12px">${range}</span><span class="bdg ${cls}" style="min-width:80px;text-align:center">${status}</span><span style="font-size:12px;color:var(--color-text-secondary)">${action}</span></div>`).join('')}
+</div>`;
+}
+
+let ctEd=null;
+function renderContent(){
+  const agOpts=D.agents.map(a=>`<option value="${a.id}">${a.id} — ${a.name}</option>`).join('');
+  document.getElementById('t-content').innerHTML=`
+<div class="row"><span class="sec">Content log</span><button class="btn btnp" onclick="openCtEd()"><i class="ti ti-plus" aria-hidden="true"></i> Log post</button></div>
+<div id="ct-form-area"></div>
+<div class="card card-tbl">
+  <table class="tbl">
+    <thead><tr><th style="width:60px">Agent</th><th style="width:120px">Post type</th><th style="width:90px">Platform</th><th style="width:80px">Date</th><th style="width:75px">Reach</th><th style="width:80px">Engagement</th><th style="width:95px">Violation</th><th style="width:40px"></th></tr></thead>
+    <tbody>${[...D.content].reverse().map((c,i)=>{const vcls=c.violation==='none'?'bg':c.violation==='minor'?'ba':'br';const vl=c.violation==='none'?'None':c.violation==='minor'?'Minor':'Major';return`<tr>
+      <td style="font-size:11px;font-weight:500;color:#3B6D11">${c.agentId}</td>
+      <td>${c.type}</td><td>${c.platform}</td>
+      <td style="color:var(--color-text-secondary)">${c.date}</td>
+      <td>${f(c.reach)}</td><td>${f(c.engage)}</td>
+      <td><span class="bdg ${vcls}">${vl}</span></td>
+      <td><button class="btn btns btnd" onclick="delCt(${D.content.length-1-i})" aria-label="Delete"><i class="ti ti-trash" aria-hidden="true"></i></button></td>
+    </tr>`}).join('')}</tbody>
+  </table>
+</div>`;
+}
+function openCtEd(){
+  const agOpts=D.agents.map(a=>`<option value="${a.id}">${a.id} — ${a.name}</option>`).join('');
+  document.getElementById('ct-form-area').innerHTML=`<div class="ov-modal">
+    <div style="font-size:14px;font-weight:500;margin-bottom:14px">Log content post</div>
+    <div class="mf"><div class="field"><label>Agent</label><select id="cf-ag">${agOpts}</select></div><div class="field"><label>Date</label><input id="cf-date" type="date" value="${new Date().toISOString().slice(0,10)}"></div></div>
+    <div class="mf"><div class="field"><label>Post type</label><select id="cf-type"><option>Lifestyle mood</option><option>Product hint story</option><option>Wellness quote</option><option>New stock alert</option><option>Weekend vibe</option><option>Night mode</option><option>Did you know</option><option>Other</option></select></div><div class="field"><label>Platform</label><select id="cf-plat"><option>Facebook</option><option>Instagram</option><option>TikTok</option><option>Telegram</option></select></div></div>
+    <div class="mf"><div class="field"><label>Reach</label><input id="cf-reach" type="number" value="0"></div><div class="field"><label>Engagement</label><input id="cf-eng" type="number" value="0"></div></div>
+    <div class="field"><label>Policy violation</label><select id="cf-vio"><option value="none">None</option><option value="minor">Minor</option><option value="major">Major — page at risk</option></select></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" onclick="document.getElementById('ct-form-area').innerHTML=''">Cancel</button><button class="btn btnp" onclick="saveCt()">Save</button></div>
+  </div>`;
+}
+function saveCt(){
+  D.content.push({agentId:document.getElementById('cf-ag').value,date:document.getElementById('cf-date').value,type:document.getElementById('cf-type').value,platform:document.getElementById('cf-plat').value,reach:parseInt(document.getElementById('cf-reach').value)||0,engage:parseInt(document.getElementById('cf-eng').value)||0,violation:document.getElementById('cf-vio').value});
+  sv();renderContent();
+}
+function delCt(i){if(confirm('Delete this log?')){D.content.splice(i,1);sv();renderContent();}}
+
+function renderIssues(){
+  const agOpts=D.agents.map(a=>`<option value="${a.id}">${a.id} — ${a.name}</option>`).join('');
+  document.getElementById('t-issues').innerHTML=`
+<div class="row"><span class="sec">Issues log</span><button class="btn btnp" onclick="openIsEd()"><i class="ti ti-plus" aria-hidden="true"></i> Log issue</button></div>
+<div id="is-form-area"></div>
+<div class="card card-tbl">
+  <table class="tbl">
+    <thead><tr><th style="width:80px">Date</th><th style="width:60px">Agent</th><th style="width:170px">Description</th><th style="width:80px">Severity</th><th style="width:90px">Status</th><th style="width:130px">Resolution</th><th style="width:40px"></th></tr></thead>
+    <tbody>${[...D.issues].reverse().map((is,i)=>{const scls=is.severity==='Low'?'bb':is.severity==='Medium'?'ba':'br';const stcls=is.status==='Resolved'?'bg':is.status==='In progress'?'ba':'br';return`<tr>
+      <td style="color:var(--color-text-secondary)">${is.date}</td>
+      <td style="font-size:11px;font-weight:500;color:#3B6D11">${is.agentId}</td>
+      <td>${is.desc}</td>
+      <td><span class="bdg ${scls}">${is.severity}</span></td>
+      <td><span class="bdg ${stcls}">${is.status}</span></td>
+      <td style="color:var(--color-text-secondary);font-size:11px">${is.resolution||'—'}</td>
+      <td><button class="btn btns btnd" onclick="delIs(${D.issues.length-1-i})" aria-label="Delete"><i class="ti ti-trash" aria-hidden="true"></i></button></td>
+    </tr>`}).join('')}</tbody>
+  </table>
+</div>`;
+}
+function openIsEd(){
+  const agOpts=D.agents.map(a=>`<option value="${a.id}">${a.id} — ${a.name}</option>`).join('');
+  document.getElementById('is-form-area').innerHTML=`<div class="ov-modal">
+    <div style="font-size:14px;font-weight:500;margin-bottom:14px">Log issue</div>
+    <div class="mf"><div class="field"><label>Agent</label><select id="if-ag">${agOpts}</select></div><div class="field"><label>Date</label><input id="if-date" type="date" value="${new Date().toISOString().slice(0,10)}"></div></div>
+    <div class="field"><label>Description</label><input id="if-desc" placeholder="Describe the issue..."></div>
+    <div class="mf"><div class="field"><label>Severity</label><select id="if-sev"><option>Low</option><option>Medium</option><option>High</option></select></div><div class="field"><label>Status</label><select id="if-stat"><option>Open</option><option>In progress</option><option>Resolved</option></select></div></div>
+    <div class="field"><label>Resolution notes</label><input id="if-res" placeholder="How was it resolved?"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" onclick="document.getElementById('is-form-area').innerHTML=''">Cancel</button><button class="btn btnp" onclick="saveIs()">Save</button></div>
+  </div>`;
+}
+function saveIs(){
+  D.issues.push({agentId:document.getElementById('if-ag').value,date:document.getElementById('if-date').value,desc:document.getElementById('if-desc').value,severity:document.getElementById('if-sev').value,status:document.getElementById('if-stat').value,resolution:document.getElementById('if-res').value});
+  sv();renderIssues();
+}
+function delIs(i){if(confirm('Delete this issue?')){D.issues.splice(i,1);sv();renderIssues();}}
+
+buildNav();
+renderOverview();
+</script>
